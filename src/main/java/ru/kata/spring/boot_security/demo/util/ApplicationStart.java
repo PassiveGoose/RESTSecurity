@@ -28,6 +28,7 @@ public class ApplicationStart implements ApplicationRunner {
         User user = new User();
         user.setName("admin");
         user.setSurname("admin");
+        user.setAge(1);
         user.setUsername("admin");
         user.setPassword(passwordEncoder.encode("admin"));
         user.addRole(new Role());
@@ -37,6 +38,7 @@ public class ApplicationStart implements ApplicationRunner {
         user = new User();
         user.setName("user");
         user.setSurname("user");
+        user.setAge(1);
         user.setUsername("user");
         user.setPassword(passwordEncoder.encode("user"));
         user.addRole(new Role());

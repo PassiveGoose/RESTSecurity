@@ -25,6 +25,7 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
+        model.addAttribute("role", user.getRoles().stream().anyMatch(role -> role.getName().equals("ADMIN")) ? "ROLE_ADMIN" : "ROLE_USER");
         model.addAttribute("user", userService.getUserById(user.getId()));
         return "user";
     }

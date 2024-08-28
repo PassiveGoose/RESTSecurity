@@ -29,9 +29,9 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark w-100">
         <div class="container-fluid">
             <span class="navbar-text text-white" th:object="${user}" style="font-size: 26px">
-                <span style="font-weight: 800">ADMIN</span>
+                <span th:text="*{username}" style="font-weight: 800"></span>
                 with roles:
-                <span>ADMIN</span>
+                <span th:text="*{roles}"></span>
             </span>
             <form th:action="@{/logout}" method="post">
                 <button class="btn btn-outline-light" type="submit">Logout</button>
@@ -89,7 +89,7 @@
                                 <td th:text="${user.roles}">...</td>
                                 <td>
                                     <form th:action="@{/admin/edit_user}" th:object="${user}" method="get">
-                                        <button class="btn btn-primary" type="submit" name="id" th:value="*{id}" > Edit </button>
+                                        <button class="btn btn-info text-light" type="submit" name="id" th:value="*{id}" > Edit </button>
                                     </form>
                                 </td>
                                 <td>

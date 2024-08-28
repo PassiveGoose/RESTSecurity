@@ -40,11 +40,20 @@
     </nav>
 
     <div class="row g-0">
+
         <!-- Sidebar -->
         <nav class="col-md-2 d-lg-block bg-dark-subtle sidebar">
             <ul class="nav flex-column nav-pills bg-dark-subtle">
-                <li class="nav-item w-100">
+                <div>
                     <br>
+                </div>
+                <!-- Always visible User link -->
+                <li class="nav-item w-100">
+                    <div th:if="'ROLE_ADMIN' == ${role}">
+                        <a class="nav-link" aria-current="page" href="admin/users">
+                            <div th:align="left">Admin</div>
+                        </a>
+                    </div>
                     <a class="nav-link active" aria-current="page" href="/user">
                         <div th:align="left">User</div>
                     </a>

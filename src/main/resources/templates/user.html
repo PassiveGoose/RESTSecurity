@@ -11,14 +11,14 @@
         }
         .sidebar {
             height: 100vh;
-            overflow-y: auto; /* Ensure the sidebar can scroll if content overflows */
+            overflow-y: auto;
         }
         .nav-item {
             width: 100%;
             display: block;
         }
         body, html {
-            overflow-x: hidden; /* Prevent horizontal overflow */
+            overflow-x: hidden;
         }
     </style>
 </head>
@@ -47,10 +47,9 @@
                 <div>
                     <br>
                 </div>
-                <!-- Always visible User link -->
                 <li class="nav-item w-100">
                     <div th:if="'ROLE_ADMIN' == ${role}">
-                        <a class="nav-link" aria-current="page" href="admin/users">
+                        <a class="nav-link" aria-current="page" href="admin">
                             <div th:align="left">Admin</div>
                         </a>
                     </div>

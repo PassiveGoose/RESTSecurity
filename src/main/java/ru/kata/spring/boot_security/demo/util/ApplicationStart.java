@@ -1,47 +1,59 @@
 package ru.kata.spring.boot_security.demo.util;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.service.UserService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
+@Transactional
 public class ApplicationStart implements ApplicationRunner {
 
-    private final UserService userService;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public ApplicationStart(UserService userService,
-                            PasswordEncoder passwordEncoder) {
-        this.userService = userService;
+    public ApplicationStart(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(ApplicationArguments args) {
-        User user = new User();
-        user.setName("admin");
-        user.setSurname("admin");
-        user.setAge(1);
-        user.setUsername("admin");
-        user.setPassword(passwordEncoder.encode("admin"));
-        user.addRole(new Role());
-        user.addRole(new Role("ADMIN"));
-        userService.saveUser(user);
+        entityManager.persist(new Role("USER"));
+        entityManager.persist(new Role("ADMIN"));
 
-        user = new User();
-        user.setName("user");
-        user.setSurname("user");
-        user.setAge(1);
-        user.setUsername("user");
-        user.setPassword(passwordEncoder.encode("user"));
-        user.addRole(new Role());
-        userService.saveUser(user);
+        User adminUser = new User();
+        adminUser.setName("admin");
+        adminUser.setSurname("admin");
+        adminUser.setUsername("admin");
+        adminUser.setPassword(passwordEncoder.encode("admin"));
+
+        Role userRole = entityManager.find(Role.class, 1);
+        Role adminRole = entityManager.find(Role.class, 2);
+
+        adminUser.setRoles(new ArrayList<>(List.of(userRole, adminRole)));
+        entityManager.persist(adminUser);
+
+        User regularUser = new User();
+        regularUser.setName("user");
+        regularUser.setSurname("user");
+        regularUser.setUsername("user");
+        regularUser.setPassword(passwordEncoder.encode("user"));
+
+        userRole = entityManager.find(Role.class, 1);
+
+        regularUser.setRoles(new ArrayList<>(List.of(userRole)));
+        entityManager.persist(regularUser);
     }
 }

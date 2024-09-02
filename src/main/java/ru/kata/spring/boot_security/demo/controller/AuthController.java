@@ -1,35 +1,26 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
-import ru.kata.spring.boot_security.demo.util.UserValidator;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserValidator userValidator;
-
     private final UserService userService;
 
-    private final PasswordEncoder passwordEncoder;
-
     @Autowired
-    public AuthController(UserValidator userValidator,
-                          UserService userService,
-                          PasswordEncoder passwordEncoder) {
-        this.userValidator = userValidator;
+    public AuthController(UserService userService) {
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/login")
@@ -48,15 +39,10 @@ public class AuthController {
     }
 
     @PostMapping(value = "/register", params = "action=create")
-    public String register(@ModelAttribute("user") User user,
-                           BindingResult bindingResult) {
-        userValidator.validate(user, bindingResult);
-        if (bindingResult.hasErrors()) {
+    public String register(@ModelAttribute("user") User user) {
+        if (userService.saveUser(user, new ArrayList<>(Collections.singletonList("USER")))) {
             return "redirect:register?error";
         }
-        user.addRole(new Role());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userService.saveUser(user);
         return "redirect:login";
     }
 }

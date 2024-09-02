@@ -5,9 +5,11 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaQuery;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class UserDaoImpl implements UserDao {
@@ -29,7 +31,9 @@ public class UserDaoImpl implements UserDao {
     public List<User> getAllUsers() {
         CriteriaQuery<User> criteriaQuery = entityManager.getCriteriaBuilder().createQuery(User.class);
         criteriaQuery.from(User.class);
-        return entityManager.createQuery(criteriaQuery).getResultList();
+        List<User> userList = entityManager.createQuery(criteriaQuery).getResultList();
+        userList.forEach(user -> Hibernate.initialize(user.getRoles()));
+        return userList;
     }
 
     @Override
@@ -42,5 +46,13 @@ public class UserDaoImpl implements UserDao {
         User user = entityManager.find(User.class, id);
         Hibernate.initialize(user.getRoles());
         return user;
+    }
+
+    @Override
+    public Optional<Role> getRoleByName(String roleName) {
+        CriteriaQuery<Role> criteriaQuery = entityManager.getCriteriaBuilder().createQuery(Role.class);
+        criteriaQuery.from(Role.class);
+        List<Role> roleList = entityManager.createQuery(criteriaQuery).getResultList();
+        return roleList.stream().filter(role -> role.getName().equals(roleName)).findFirst();
     }
 }

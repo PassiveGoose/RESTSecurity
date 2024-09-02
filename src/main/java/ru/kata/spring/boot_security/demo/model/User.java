@@ -51,12 +51,6 @@ public class User implements UserDetails {
     )
     private List<Role> roles = new ArrayList<>();
 
-    public User() {
-        this.name = "defaultName";
-        this.surname = "defaultSurname";
-        this.age = 1;
-    }
-
     public void setId(int id) {
         this.id = id;
     }

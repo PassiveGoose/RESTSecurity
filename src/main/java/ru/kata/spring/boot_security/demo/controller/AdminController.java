@@ -1,11 +1,15 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.kata.spring.boot_security.demo.model.User;
@@ -30,19 +34,6 @@ public class AdminController {
         model.addAttribute("user", user);
         model.addAttribute("users", userService.getAllUsers());
         return "admin/user_list";
-    }
-
-    @PostMapping(value = "/add_user")
-    public String addUser(@RequestParam("name") String name,
-                          @RequestParam("surname") String surname,
-                          @RequestParam("age") int age,
-                          @RequestParam("username") String username,
-                          @RequestParam("password") String password,
-                          @RequestParam List<String> roles) {
-        if (!userService.saveUser(name, surname, age, username, password, roles)) {
-            return "redirect:/admin?error";
-        }
-        return "redirect:/admin";
     }
 
     @PostMapping(value = "/delete_user", params = "id")

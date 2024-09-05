@@ -1,17 +1,51 @@
 $(document).ready(async function () {
-    console.log("Document ready, fetching users...");
+    console.log("Document ready");
     await getTableWithUsers();
     await addNewUser();
 });
+
+function getCsrfToken() {
+    return document.querySelector('meta[name="_csrf"]').getAttribute('content');
+}
 
 const userFetchService = {
     head: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'X-XSRF-TOKEN': getCsrfToken(),
         'Referer': null
     },
     findAllUsers: async () => await fetch('/api/users', { method: 'GET' }),
-    addNewUser: async (user) => await fetch('api/users', {method: 'POST', headers: userFetchService.head, body: JSON.stringify(user)})
+    findOneUser: async (id) => await fetch(`api/users?id=` + id, {method: 'GET'}),
+    addNewUser: async (user, roles) => {
+        const headers = userFetchService.head;
+
+        const body = {
+            user: user,
+            roles: roles
+        };
+
+        return await fetch('/api/users', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(body)
+        });
+    },
+    deleteUser: async (id) => await fetch('api/users?id=' + id, {method: 'DELETE'}),
+    updateUser: async (id, user, roles) => {
+        const headers = userFetchService.head;
+
+        const body = {
+            user: user,
+            roles: roles
+        };
+
+        return await fetch('/api/users?id=' + id, {
+            method: 'PUT',
+            headers: headers,
+            body: JSON.stringify(body)
+        });
+    }
 }
 
 async function getTableWithUsers() {
@@ -21,7 +55,7 @@ async function getTableWithUsers() {
     try {
         const response = await userFetchService.findAllUsers();
         const users = await response.json();
-        console.log("Fetched users:", users); // Check fetched users in console
+        console.log("Fetched users:", users);
 
         users.forEach(user => {
             let rolesString = user.roles.map(role => role.name).join(', ');
@@ -33,7 +67,7 @@ async function getTableWithUsers() {
                 <td>${user.username}</td>
                 <td>${rolesString}</td>
                 <td>
-                    <button type="button" data-userid="${user.id}" data-action="edit" class="btn text-light btn-info"
+                    <button id="editButton" type="button" data-userid="${user.id}" data-action="edit" class="btn text-light btn-info"
                     data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button>
                 </td>
                 <td>
@@ -42,6 +76,12 @@ async function getTableWithUsers() {
                 </td>
             </tr>`;
             table.append(tableFilling);
+
+            document.getElementById('editUserModal').addEventListener('show.bs.modal', function (event) {
+                let userId = event.relatedTarget.getAttribute('data-userid');
+                let editUserModal = $('#editUserModal');
+                editUser(editUserModal, userId);
+            });
         });
     } catch (error) {
         console.error('Error filling table with users:', error);
@@ -56,9 +96,14 @@ async function addNewUser() {
         let age = addUserForm.find('#age').val().trim();
         let username = addUserForm.find('#username').val().trim();
         let password = addUserForm.find('#password').val().trim();
-        let userRole = addUserForm.find('#checkboxUser').val().trim();
-        let adminRole = addUserForm.find('#checkboxAdmin').val().trim();
 
+        let roles = [];
+        if (addUserForm.find('#checkboxUser').is(':checked')) {
+            roles.push('USER');
+        }
+        if (addUserForm.find('#checkboxAdmin').is(':checked')) {
+            roles.push('ADMIN');
+        }
         let data = {
             name: name,
             surname: surname,
@@ -66,12 +111,78 @@ async function addNewUser() {
             username: username,
             password: password
         }
-        const response = await userFetchService.addNewUser(data);
+        const response = await userFetchService.addNewUser(data, roles);
         if (response.ok) {
             await getTableWithUsers();
-            addUserForm.find('#AddNewUserLogin').val('');
-            addUserForm.find('#AddNewUserPassword').val('');
-            addUserForm.find('#AddNewUserAge').val('');
+            addUserForm.find('#name').val('');
+            addUserForm.find('#surname').val('');
+            addUserForm.find('#age').val('');
+            addUserForm.find('#username').val('');
+            addUserForm.find('#password').val('');
+            addUserForm.find('#checkboxUser').val(false);
+            addUserForm.find('#checkboxAdmin').val(false);
+        } else {
+            console.error('smth wrong');
+            let alert = `<div class="alert alert-danger alert-dismissible fade show col-12" role="alert" id="sharaBaraMessageError">                         
+                            <button type="button" class="btn close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>`;
+            addUserForm.prepend(alert)
+        }
+    })
+}
+
+async function editUser(modal, id) {
+    let preUser = await userFetchService.findOneUser(id);
+    let user = preUser.json();
+
+    modal.find('.modal-footer').empty();
+    let editButton = '<button type="button" class="btn btn-primary" id="editButton">Edit</button>';
+    let cancelButton = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
+    modal.find('.modal-footer').append(editButton);
+    modal.find('.modal-footer').append(cancelButton);
+
+    user.then(user => {
+        modal.find('.modal-title').html('Edit user - ' + user.username);
+        modal.find('#editName').prop('value', user.name);
+        modal.find('#editSurname').prop('value', user.surname);
+        modal.find('#editAge').prop('value', user.age);
+        modal.find('#editUsername').prop('value', user.username);
+        for (let i = 0; i < user.roles.length; i++) {
+            if (user.roles[i].name === 'USER') {
+                modal.find('#editRoleUser').prop('checked', true);
+            }
+        }
+        for (let i = 0; i < user.roles.length; i++) {
+            if (user.roles[i].name === 'ADMIN') {
+                modal.find('#editRoleAdmin').prop('checked', true);
+            }
+        }
+    })
+
+    modal.find('#editButton').on('click', async () => {
+        let name = modal.find('#editName').val();
+        let surname = modal.find('#editSurname').val();
+        let age = modal.find("#editAge").val();
+        let username = modal.find('#editUsername').val();
+        let data = {
+            name: name,
+            surname: surname,
+            age: age,
+            username: username
+        }
+        let roles = [];
+        if (modal.find('#editRoleUser').is(':checked')) {
+            roles.push('USER');
+        }
+        if (modal.find('#editRoleAdmin').is(':checked')) {
+            roles.push('ADMIN');
+        }
+        const response = await userFetchService.updateUser(id, data, roles);
+
+        if (response.ok) {
+            await getTableWithUsers();
         } else {
             let body = await response.json();
             let alert = `<div class="alert alert-danger alert-dismissible fade show col-12" role="alert" id="sharaBaraMessageError">
@@ -80,7 +191,7 @@ async function addNewUser() {
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>`;
-            addUserForm.prepend(alert)
+            modal.find('.modal-body').prepend(alert);
         }
     })
 }

@@ -1,6 +1,5 @@
 package ru.kata.spring.boot_security.demo.service;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -43,14 +42,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public boolean saveUser(@Valid User user, List<String> roles) {
+    public boolean saveUser(User user, List<String> roles) {
         setRolesToUser(user, roles);
         if (checkUserIsAlreadyInDb(user)) {
-            return true;
+            return false;
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.saveUser(user);
-        return false;
+        return true;
     }
 
     @Override
@@ -74,7 +73,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public boolean updateUser(@Valid User user, List<String> roles) {
+    public boolean updateUser(User user, List<String> roles) {
         setRolesToUser(user, roles);
         if (checkUserIsAlreadyInDb(user)) {
             return false;

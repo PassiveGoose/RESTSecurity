@@ -138,7 +138,7 @@ async function editUser(modal, id) {
     let user = preUser.json();
 
     modal.find('.modal-footer').empty();
-    let editButton = '<button type="button" class="btn btn-primary" id="editButton">Edit</button>';
+    let editButton = '<button type="submit" class="btn btn-primary" id="editButton">Edit</button>';
     let closeButton = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
     modal.find('.modal-footer').append(editButton);
     modal.find('.modal-footer').append(closeButton);
@@ -183,6 +183,7 @@ async function editUser(modal, id) {
 
         if (response.ok) {
             await getTableWithUsers();
+            modal.modal('hide');
         } else {
             let body = await response.json();
             let alert = `<div class="alert alert-danger alert-dismissible fade show col-12" role="alert" id="sharaBaraMessageError">

@@ -139,9 +139,9 @@ async function editUser(modal, id) {
 
     modal.find('.modal-footer').empty();
     let editButton = '<button type="button" class="btn btn-primary" id="editButton">Edit</button>';
-    let cancelButton = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
+    let closeButton = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
     modal.find('.modal-footer').append(editButton);
-    modal.find('.modal-footer').append(cancelButton);
+    modal.find('.modal-footer').append(closeButton);
 
     user.then(user => {
         modal.find('.modal-title').html('Edit user - ' + user.username);

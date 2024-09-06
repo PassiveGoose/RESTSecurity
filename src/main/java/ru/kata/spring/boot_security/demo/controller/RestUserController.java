@@ -64,8 +64,8 @@ public class RestUserController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/users", params = "id")
-    public ResponseEntity<HttpStatus> deleteUser(@RequestParam int id) {
+    @DeleteMapping(value = "/users")
+    public ResponseEntity<HttpStatus> deleteUser(@RequestBody int id) {
         userService.removeUserById(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }

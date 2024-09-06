@@ -31,7 +31,14 @@ const userFetchService = {
             body: JSON.stringify(body)
         });
     },
-    deleteUser: async (id) => await fetch('api/users?id=' + id, {method: 'DELETE'}),
+    deleteUser: async (id) =>  {
+        const headers = userFetchService.head;
+        await fetch('api/users', {
+            method: 'DELETE',
+            headers: headers,
+            body: JSON.stringify(id)
+        })
+    },
     updateUser: async (id, user, roles) => {
         const headers = userFetchService.head;
 
@@ -82,6 +89,11 @@ async function getTableWithUsers() {
                 let editUserModal = $('#editUserModal');
                 editUser(editUserModal, userId);
             });
+            document.getElementById('deleteUserModal').addEventListener('show.bs.modal', function (event) {
+                let userId = event.relatedTarget.getAttribute('data-userid');
+                let deleteUserModal = $('#deleteUserModal');
+                deleteUser(deleteUserModal, userId);
+            })
         });
     } catch (error) {
         console.error('Error filling table with users:', error);
@@ -185,14 +197,47 @@ async function editUser(modal, id) {
             await getTableWithUsers();
             modal.modal('hide');
         } else {
-            let body = await response.json();
-            let alert = `<div class="alert alert-danger alert-dismissible fade show col-12" role="alert" id="sharaBaraMessageError">
-                            ${body.info}
+            let alert = `<div class="alert alert-danger alert-dismissible fade show col-12" role="alert" id="sharaBaraMessageError">                         
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>`;
             modal.find('.modal-body').prepend(alert);
         }
+    })
+}
+
+async function deleteUser(modal, id) {
+    let preUser = await userFetchService.findOneUser(id);
+    let user = preUser.json();
+
+    modal.find('.modal-footer').empty();
+    let deleteButton = '<button type="submit" class="btn btn-danger" id="deleteButton">Delete</button>';
+    let closeButton = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
+    modal.find('.modal-footer').append(deleteButton);
+    modal.find('.modal-footer').append(closeButton);
+
+    user.then(user => {
+        modal.find('.modal-title').html('Delete user - ' + user.username);
+        modal.find('#deleteName').prop('value', user.name);
+        modal.find('#deleteSurname').prop('value', user.surname);
+        modal.find('#deleteAge').prop('value', user.age);
+        modal.find('#deleteUsername').prop('value', user.username);
+        for (let i = 0; i < user.roles.length; i++) {
+            if (user.roles[i].name === 'USER') {
+                modal.find('#deleteRoleUser').prop('checked', true);
+            }
+        }
+        for (let i = 0; i < user.roles.length; i++) {
+            if (user.roles[i].name === 'ADMIN') {
+                modal.find('#deleteRoleAdmin').prop('checked', true);
+            }
+        }
+    })
+
+    modal.find('#deleteButton').on('click', async () => {
+        await userFetchService.deleteUser(id);
+        await getTableWithUsers();
+        modal.modal('hide');
     })
 }

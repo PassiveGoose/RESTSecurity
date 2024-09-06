@@ -164,6 +164,8 @@ async function editUser(modal, id) {
         modal.find('#editSurname').prop('value', user.surname);
         modal.find('#editAge').prop('value', user.age);
         modal.find('#editUsername').prop('value', user.username);
+        modal.find('#editRoleUser').prop('checked', false);
+        modal.find('#editRoleAdmin').prop('checked', false);
         for (let i = 0; i < user.roles.length; i++) {
             if (user.roles[i].name === 'USER') {
                 modal.find('#editRoleUser').prop('checked', true);
@@ -226,6 +228,8 @@ async function deleteUser(modal, id) {
         modal.find('#deleteSurname').prop('value', user.surname);
         modal.find('#deleteAge').prop('value', user.age);
         modal.find('#deleteUsername').prop('value', user.username);
+        modal.find('#deleteRoleUser').prop('checked', false);
+        modal.find('#deleteRoleAdmin').prop('checked', false);
         for (let i = 0; i < user.roles.length; i++) {
             if (user.roles[i].name === 'USER') {
                 modal.find('#deleteRoleUser').prop('checked', true);

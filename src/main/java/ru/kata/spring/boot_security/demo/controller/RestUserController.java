@@ -42,11 +42,10 @@ public class RestUserController {
 
     @PostMapping("/users")
     public ResponseEntity<HttpStatus> addUser(@RequestBody Map<String, Object> body) {
-        User newUserData = parseUser(body.get("user"));
+        User newUser = parseUser(body.get("user"));
         List<String> roles = parseRoles(body.get("roles"));
 
-        if (!userService.saveUser(newUserData.getName(), newUserData.getSurname(), newUserData.getAge(),
-                newUserData.getUsername(), newUserData.getPassword(), roles)) {
+        if (!userService.saveUser(newUser, roles)) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(HttpStatus.CREATED);
@@ -58,7 +57,7 @@ public class RestUserController {
         List<String> roles = parseRoles(body.get("roles"));
 
         if (!userService.updateUser(id, updateUser.getName(), updateUser.getSurname(),
-                updateUser.getAge(), updateUser.getUsername(), roles)) {
+                updateUser.getAge(), updateUser.getUsername(), updateUser.getPassword(), roles)) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(HttpStatus.OK);

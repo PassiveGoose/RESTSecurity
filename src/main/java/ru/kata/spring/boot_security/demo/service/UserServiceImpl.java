@@ -30,18 +30,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public boolean saveUser(String name, String surname, int age,
-                            String username, String password, List<String> roles) {
-        User user = new User();
-        user.setName(name);
-        user.setSurname(surname);
-        user.setAge(age);
-        user.setUsername(username);
-        user.setPassword(password);
-        return this.saveUser(user, roles);
-    }
-
-    @Override
     public boolean saveUser(User user, List<String> roles) {
         setRolesToUser(user, roles);
         if (checkUserIsAlreadyInDb(user)) {
@@ -63,12 +51,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     public boolean updateUser(int id, String name, String surname, int age,
-                              String username, List<String> roles) {
+                              String username, String password, List<String> roles) {
         User user = getUserById(id);
         user.setName(name);
         user.setSurname(surname);
         user.setAge(age);
         user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
         return this.updateUser(user, roles);
     }
 

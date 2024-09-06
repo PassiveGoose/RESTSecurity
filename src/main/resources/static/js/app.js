@@ -133,6 +133,9 @@ async function addNewUser() {
             addUserForm.find('#password').val('');
             addUserForm.find('#checkboxUser').val(false);
             addUserForm.find('#checkboxAdmin').val(false);
+            let success = document.getElementById('addingSuccessAlert');
+            const successBootstrap = bootstrap.Toast.getOrCreateInstance(success);
+            successBootstrap.show();
         } else {
             console.error('smth wrong');
             let alert = `<div class="alert alert-danger alert-dismissible fade show col-12" role="alert" id="sharaBaraMessageError">                         

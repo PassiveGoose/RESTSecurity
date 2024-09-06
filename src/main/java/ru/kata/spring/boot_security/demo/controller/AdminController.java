@@ -15,6 +15,6 @@ public class AdminController {
     public String printUsers(ModelMap model) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         model.addAttribute("user", user);
-        return "admin/user_list";
+        return "admin/admin_page";
     }
 }

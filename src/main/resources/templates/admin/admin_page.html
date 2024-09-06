@@ -76,7 +76,6 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <button ></button>
                                 <table id="usersTable" class="table table-striped table-sm">
                                     <thead>
                                     <tr>
@@ -153,6 +152,17 @@
                                 <br>
                                 <button id="addNewUserButton" class="btn btn-success" type="button">Create</button>
                             </form>
+                        </div>
+                    </div>
+
+                    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                        <div id="addingSuccessAlert" class="toast text-bg-success" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    User was added
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+                            </div>
                         </div>
                     </div>
                 </div>

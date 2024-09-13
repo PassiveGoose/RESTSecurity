@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  app:
+    image: 'spring-boot_security-demo:latest'
+    build:
+      context: .
+    container_name: app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/spr_sec_db
+      - SPRING_DATASOURCE_USERNAME=mborisov
+      - SPRING_DATASOURCE_PASSWORD=PassiveGoose
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+
+  db:
+    image: 'mysql/mysql-server:5.7'
+    container_name: db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=PassiveGoose
+      - MYSQL_USER=mborisov
+      - MYSQL_PASSWORD=PassiveGoose
+      - MYSQL_DATABASE=spr_sec_db

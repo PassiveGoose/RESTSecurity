@@ -164,7 +164,7 @@ async function editUser(modal, id) {
         modal.find('#editSurname').prop('value', user.surname);
         modal.find('#editAge').prop('value', user.age);
         modal.find('#editUsername').prop('value', user.username);
-        modal.find('editPassword').prop('value', user.username);
+        modal.find('#editPassword').prop('value', user.password);
         modal.find('#editRoleUser').prop('checked', false);
         modal.find('#editRoleAdmin').prop('checked', false);
         for (let i = 0; i < user.roles.length; i++) {

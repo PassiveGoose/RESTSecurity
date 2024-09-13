@@ -40,7 +40,7 @@ public class AuthController {
 
     @PostMapping(value = "/register", params = "action=create")
     public String register(@ModelAttribute("user") User user) {
-        if (userService.saveUser(user, new ArrayList<>(Collections.singletonList("USER")))) {
+        if (!userService.saveUser(user, new ArrayList<>(Collections.singletonList("USER")))) {
             return "redirect:register?error";
         }
         return "redirect:login";
